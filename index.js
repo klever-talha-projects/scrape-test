@@ -1,0 +1,78 @@
+const puppeteer = require("puppeteer");
+const express = require("express")
+const bodyParser = require("body-parser");
+const cors = require("cors");
+
+let app = express();
+
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+
+app.post("/api/scrape", async function (req, res) {
+
+    let articleNum = req.body.article;
+
+    const scrapedLink = await linkScrape(articleNum);
+    const scrapedData = await Scrape(scrapedLink);
+    res.json(scrapedData);
+
+})
+
+async function linkScrape(articleNum) {
+    const browser = await puppeteer.launch({
+        headless: false
+    });
+    const page = await browser.newPage();
+    await page.goto("https://www.ikea.com/es/es/search/?q=" + articleNum)
+
+    const data = await page.evaluate(function () {
+        let link = document.querySelector(".link").getAttribute("href")
+        return link
+    })
+
+    await browser.close();
+    return data
+
+}
+
+async function Scrape(data) {
+    const browser = await puppeteer.launch({
+        headless: false
+    });
+    const page = await browser.newPage();
+    await page.goto(data)
+
+    const scrape = await page.evaluate(function () {
+        let image = document.querySelector(".pip-image").getAttribute("src")
+        let name = document.querySelector(".pip-header-section__title--big").innerText
+        let price = document.querySelector(".pip-temp-price__integer").innerText
+        let desc = document.querySelector(".pip-header-section__description").innerText
+
+        let array = [];
+
+        // Push the values into the array
+        array.push({
+            image,
+            name,
+            price,
+            desc
+        });
+
+        return array
+    });
+
+    
+    await browser.close();
+    return scrape
+}
+
+
+
+const port = 3000;
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
