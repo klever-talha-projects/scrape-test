@@ -2,7 +2,6 @@ const puppeteer = require("puppeteer");
 const express = require("express")
 const bodyParser = require("body-parser");
 const cors = require("cors");
-require("dotenv").config();
 
 let app = express();
 
@@ -23,11 +22,8 @@ app.post("/api/scrape", async function (req, res) {
 
 })
 
-let browser;
-
 async function linkScrape(articleNum) {
-
-    browser = await puppeteer.launch({
+    const browser = await puppeteer.launch({
     args: [
       "--disable-setuid-sandbox",
       "--no-sandbox",
@@ -39,7 +35,6 @@ async function linkScrape(articleNum) {
         ? process.env.PUPPETEER_EXECUTABLE_PATH
         : puppeteer.executablePath(),
   });
-    
     const page = await browser.newPage();
     await page.goto("https://www.ikea.com/es/es/search/?q=" + articleNum)
 
@@ -48,19 +43,32 @@ async function linkScrape(articleNum) {
         return link
     })
 
+    await browser.close();
     return data
 
 }
 
 async function Scrape(data) {
+    const browser = await puppeteer.launch({
+    args: [
+      "--disable-setuid-sandbox",
+      "--no-sandbox",
+      "--single-process",
+      "--no-zygote",
+    ],
+    executablePath:
+      process.env.NODE_ENV === "production"
+        ? process.env.PUPPETEER_EXECUTABLE_PATH
+        : puppeteer.executablePath(),
+  });
     const page = await browser.newPage();
     await page.goto(data)
 
     const scrape = await page.evaluate(function () {
-        let image = document.querySelector(".pip-image")?.getAttribute("src")
-        let name = document.querySelector(".pip-header-section__title--big")?.innerText
-        let price = document.querySelector(".pip-temp-price__sr-text")?.innerText
-        let desc = document.querySelector(".pip-header-section__description")?.innerText
+        let image = document.querySelector(".pip-image").getAttribute("src")
+        let name = document.querySelector(".pip-header-section__title--big").innerText
+        let price = document.querySelector(".pip-temp-price__integer").innerText
+        let desc = document.querySelector(".pip-header-section__description").innerText
 
         let array = [];
 
@@ -75,10 +83,14 @@ async function Scrape(data) {
         return array
     });
 
+    
     await browser.close();
     return scrape
 }
 
 
 
-app.listen();
+const port = 3000;
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
