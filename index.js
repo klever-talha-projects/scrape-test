@@ -25,8 +25,9 @@ app.post("/api/scrape", async function (req, res) {
 
 let browser;
 
-(async () => {
-browser = await puppeteer.launch({
+async function linkScrape(articleNum) {
+
+    browser = await puppeteer.launch({
     args: [
       "--disable-setuid-sandbox",
       "--no-sandbox",
@@ -38,10 +39,6 @@ browser = await puppeteer.launch({
         ? process.env.PUPPETEER_EXECUTABLE_PATH
         : puppeteer.executablePath(),
   });
-})();
-
-
-async function linkScrape(articleNum) {
     
     const page = await browser.newPage();
     await page.goto("https://www.ikea.com/es/es/search/?q=" + articleNum)
@@ -78,6 +75,7 @@ async function Scrape(data) {
         return array
     });
 
+    await browser.close();
     return scrape
 }
 
