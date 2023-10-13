@@ -2,6 +2,7 @@ const puppeteer = require("puppeteer");
 const express = require("express")
 const bodyParser = require("body-parser");
 const cors = require("cors");
+require("dotenv").config();
 
 let app = express();
 
