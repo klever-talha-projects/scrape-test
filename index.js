@@ -43,6 +43,15 @@ async function browserRun(){
 async function linkScrape(articleNum) {
     
     await browserRun() 
+        await page.setViewport({ width: 350, height: 800 });
+    await page.setRequestInterception(true);
+    page.on('request', (req) => {
+        if(req.resourceType() === 'image' || req.resourceType() === 'stylesheet' || req.resourceType() === 'font'){
+            req.abort();
+        }
+        else {
+            req.continue();
+        }})
     const page = await browser.newPage();
     await page.goto("https://www.ikea.com/es/es/search/?q=" + articleNum)
 
@@ -56,7 +65,15 @@ async function linkScrape(articleNum) {
 }
 
 async function Scrape(data) {
-    
+        await page.setViewport({ width: 350, height: 800 });
+    await page.setRequestInterception(true);
+    page.on('request', (req) => {
+        if(req.resourceType() === 'image' || req.resourceType() === 'stylesheet' || req.resourceType() === 'font'){
+            req.abort();
+        }
+        else {
+            req.continue();
+        }})
     const page = await browser.newPage();
     await page.goto(data)
 
