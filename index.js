@@ -22,10 +22,9 @@ app.post("/api/scrape", async function (req, res) {
 
 })
 
-let browser
 
 async function linkScrape(articleNum) {
-    browser = await puppeteer.launch({
+    let browser = await puppeteer.launch({
     args: [
       "--disable-setuid-sandbox",
       "--no-sandbox",
@@ -44,12 +43,25 @@ async function linkScrape(articleNum) {
         let link = document.querySelector(".link").getAttribute("href")
         return link
     })
-    
+
+    await browser.close();
     return data
 
 }
 
 async function Scrape(data) {
+    let browser = await puppeteer.launch({
+    args: [
+      "--disable-setuid-sandbox",
+      "--no-sandbox",
+      "--single-process",
+      "--no-zygote",
+    ],
+    executablePath:
+      process.env.NODE_ENV === "production"
+        ? process.env.PUPPETEER_EXECUTABLE_PATH
+        : puppeteer.executablePath(),
+  });
     const page = await browser.newPage();
     await page.goto(data)
 
