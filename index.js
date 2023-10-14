@@ -69,7 +69,7 @@ async function Scrape(data) {
     await page.setViewport({ width: 350, height: 800 });
     await page.setRequestInterception(true);
     page.on('request', (req) => {
-        if(req.resourceType() === 'image' || req.resourceType() === 'stylesheet' || req.resourceType() === 'font'){
+        if(req.resourceType() === 'image' || req.resourceType() === 'stylesheet' || req.resourceType() === 'font' || req.resourceType() === 'script'){
             req.abort();
         }
         else {
