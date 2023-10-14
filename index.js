@@ -24,7 +24,7 @@ app.post("/api/scrape", async function (req, res) {
 
 let browser
 
-function browserRun(){
+async function browserRun(){
     browser = await puppeteer.launch({
     args: [
       "--disable-setuid-sandbox",
@@ -42,7 +42,7 @@ function browserRun(){
 
 async function linkScrape(articleNum) {
     
-    browserRun() 
+    await browserRun() 
     const page = await browser.newPage();
     await page.goto("https://www.ikea.com/es/es/search/?q=" + articleNum)
 
@@ -51,7 +51,6 @@ async function linkScrape(articleNum) {
         return link
     })
 
-    await browser.close();
     return data
 
 }
