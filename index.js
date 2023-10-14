@@ -22,9 +22,10 @@ app.post("/api/scrape", async function (req, res) {
 
 })
 
+let browser
 
-async function linkScrape(articleNum) {
-    let browser = await puppeteer.launch({
+function browserRun(){
+    browser = await puppeteer.launch({
     args: [
       "--disable-setuid-sandbox",
       "--no-sandbox",
@@ -36,6 +37,12 @@ async function linkScrape(articleNum) {
         ? process.env.PUPPETEER_EXECUTABLE_PATH
         : puppeteer.executablePath(),
   });
+}
+    
+
+async function linkScrape(articleNum) {
+    
+    browserRun() 
     const page = await browser.newPage();
     await page.goto("https://www.ikea.com/es/es/search/?q=" + articleNum)
 
@@ -50,18 +57,7 @@ async function linkScrape(articleNum) {
 }
 
 async function Scrape(data) {
-    let browser = await puppeteer.launch({
-    args: [
-      "--disable-setuid-sandbox",
-      "--no-sandbox",
-      "--single-process",
-      "--no-zygote",
-    ],
-    executablePath:
-      process.env.NODE_ENV === "production"
-        ? process.env.PUPPETEER_EXECUTABLE_PATH
-        : puppeteer.executablePath(),
-  });
+    
     const page = await browser.newPage();
     await page.goto(data)
 
