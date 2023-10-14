@@ -43,7 +43,8 @@ async function browserRun(){
 async function linkScrape(articleNum) {
     
     await browserRun() 
-        await page.setViewport({ width: 350, height: 800 });
+    const page = await browser.newPage();
+    await page.setViewport({ width: 350, height: 800 });
     await page.setRequestInterception(true);
     page.on('request', (req) => {
         if(req.resourceType() === 'image' || req.resourceType() === 'stylesheet' || req.resourceType() === 'font'){
@@ -52,7 +53,6 @@ async function linkScrape(articleNum) {
         else {
             req.continue();
         }})
-    const page = await browser.newPage();
     await page.goto("https://www.ikea.com/es/es/search/?q=" + articleNum)
 
     const data = await page.evaluate(function () {
@@ -65,7 +65,8 @@ async function linkScrape(articleNum) {
 }
 
 async function Scrape(data) {
-        await page.setViewport({ width: 350, height: 800 });
+    const page = await browser.newPage();
+    await page.setViewport({ width: 350, height: 800 });
     await page.setRequestInterception(true);
     page.on('request', (req) => {
         if(req.resourceType() === 'image' || req.resourceType() === 'stylesheet' || req.resourceType() === 'font'){
@@ -74,7 +75,6 @@ async function Scrape(data) {
         else {
             req.continue();
         }})
-    const page = await browser.newPage();
     await page.goto(data)
 
     const scrape = await page.evaluate(function () {
@@ -96,8 +96,8 @@ async function Scrape(data) {
         return array
     });
 
+    browser.close();
     return scrape
-    await browser.close();
 }
 
 
