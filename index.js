@@ -54,10 +54,10 @@ async function Scrape(data) {
     await page.goto(data)
 
     const scrape = await page.evaluate(function () {
-        let image = document.querySelector(".pip-image").getAttribute("src")
-        let name = document.querySelector(".pip-header-section__title--big").innerText
+        let image = document.querySelector(".pip-image")?.getAttribute("src")
+        let name = document.querySelector(".pip-header-section__title--big")?.innerText
         let price = document.querySelector(".pip-temp-price__sr-text")?.innerText
-        let desc = document.querySelector(".pip-header-section__description").innerText
+        let desc = document.querySelector(".pip-header-section__description")?.innerText
 
         let array = [];
 
@@ -78,4 +78,7 @@ async function Scrape(data) {
 }
 
 
-app.listen();
+const port = 3000;
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
