@@ -79,9 +79,8 @@ async function Scrape(data) {
         return array
     });
 
-    
-    await browser.close();
     return scrape
+    await browser.close();
 }
 
 
